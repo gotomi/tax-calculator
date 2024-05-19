@@ -1,0 +1,44 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+td,
+th {
+    border: 1px solid var(--sand-5);
+    padding: 0.75rem;
+    text-align: center;
+}
+th {
+    background-color: var(--sand-4);
+    color: var(--sand-0);
+}
+tr:nth-child(even) td {
+    background-color: var(--sand-1);
+}
+label {
+    padding: 8px;
+}
+tr.higherTax td {
+    background-color: var(--red-2);
+}
+
+tr:last-child td {
+    font-weight: bold;
+    background-color: var(--sand-7);
+    color: var(--sand-0);
+}
+input {
+    width: var(--size-fluid-6);
+    background-color: var(--sand-0);
+    border: 1px solid var(--sand-2);
+}
+
+input:invalid {
+    border: 2px solid var(--red-5);
+}

@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Calculator from "../components/Calculator5.svelte";
+---
+
+<Layout title="Kalkulator płacowy">
+  <main>
+    <Calculator client:visible />
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 1200px;
+    max-width: calc(100% - 2rem);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+</style>
