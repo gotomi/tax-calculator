@@ -50,8 +50,7 @@
         grossToNetWithTotal(Array(12).fill(0), 250, 0, 0, 0, true),
     );
 
-    function calculate(e: SubmitEvent | KeyboardEvent) {
-        e.preventDefault();
+    function calculateSalary() {
         yearSalaryEmployee = grossToNetWithTotal(
             grossOverTheYear,
             250,
@@ -71,9 +70,14 @@
         );
     }
 
-    //   $effect(() => {
-    //     calculate();
-    //   });
+    function calculate(e: SubmitEvent | KeyboardEvent) {
+        e.preventDefault();
+        calculateSalary();
+    }
+
+    $effect(() => {
+        calculateSalary();
+    });
 </script>
 
 <!-- a11y_no_static_element_interactions -->
