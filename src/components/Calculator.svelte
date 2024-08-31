@@ -33,6 +33,30 @@
         "netSalary",
     ];
 
+
+
+   const translations =  {
+        "month": "miesiąc",
+        "grossSalaryPerMonth": "miesięczna pensja brutto",
+        "pension": "składka emerytalna",
+        "disability": "składka rentowa",
+        "accident": "składka wypadkowa",
+        "laborFund": "Fundusz Pracy",
+        "guaranteedEmployeeBenefitsFund": "Fundusz Gwarantowanych Świadczeń Pracowniczych",
+        "ppkEmployer": "PPK pracodawcy",
+        "employerCost": "koszt pracodawcy",
+        "deductibles": "koszty uzyskania przychodu",
+        "sickness": "składka chorobowa",
+        "health": "składka zdrowotna",
+        "sumToTax": "podstawa opodatkowania",
+        "tax": "podatek",
+        "ppkEmployee": "PPK pracownika",
+        "netSalary": "wynagrodzenie netto"
+    }
+
+
+
+
     let grossOverTheYear = $derived(
         Array(12).fill(Number(grossSalaryPerMonth)),
     );
@@ -70,7 +94,11 @@
         );
     }
 
-    function calculate(e: SubmitEvent | KeyboardEvent) {
+    function calculate(
+        e: Event & {
+            currentTarget: EventTarget | (SubmitEvent & HTMLInputElement);
+        },
+    ) {
         e.preventDefault();
         calculateSalary();
     }
@@ -82,11 +110,11 @@
 
 <!-- a11y_no_static_element_interactions -->
 <div class="container">
-    <h2>Kalkulator UOP - brutto => netto</h2>
+    <h2>Kalkulator UOP: brutto - netto</h2>
     <form onsubmit={calculate}>
         <div class="params">
             <label>
-                Miesięczne wynagrodzenie brutto:
+                <strong>Miesięczne wynagrodzenie brutto: </strong>
                 <input type="number" bind:value={grossSalaryPerMonth} min="0" />
             </label>
             <label>
@@ -97,7 +125,7 @@
                     max="100"
                 /> %
             </label>
-            <br />
+
             <label>
                 PPK pracownik:
                 <input
@@ -117,7 +145,7 @@
                 /> %
             </label>
 
-            <button type="submit"> calculate</button>
+<!--            <button type="submit"> calculate</button>-->
         </div>
     </form>
     <h3>Pracownik</h3>
@@ -125,7 +153,7 @@
         <thead>
             <tr>
                 {#each employeeKeys as heading}
-                    <th>{convertToReadableString(heading)}</th>
+                    <th> {translations[heading]}</th>
                 {/each}
             </tr>
         </thead>
@@ -155,7 +183,7 @@
         <thead>
             <tr>
                 {#each employerKeys as heading}
-                    <th>{convertToReadableString(heading)}</th>
+                    <th> {translations[heading]}</th>
                 {/each}
             </tr>
         </thead>
@@ -188,6 +216,22 @@
         gap: 32px;
     }
 
+    .params{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        background-color: var(--sand-1);
+        padding: 16px;
+    }
+
+    label{
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        border: 1px solid var(--sand-3);
+        border-radius: 8px;
+    }
+
     table {
         border-collapse: collapse;
         border-spacing: 0;
@@ -199,6 +243,7 @@
         border: 1px solid var(--sand-5);
         padding: 0.75rem;
         text-align: center;
+
     }
 
     th {
@@ -234,8 +279,8 @@
         border: 2px solid var(--red-5);
     }
 
-    button {
-        background-color: var(--red-3);
-        color: var(--sand-0);
-    }
+    /*button {*/
+    /*    background-color: var(--red-3);*/
+    /*    color: var(--sand-0);*/
+    /*}*/
 </style>

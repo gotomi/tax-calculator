@@ -10,13 +10,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.1",
+    "@astrojs/check": "^0.9.3",
     "@astrojs/svelte": "^5.7.0",
     "@astrojs/vue": "^4.5.0",
-    "astro": "^4.13.1",
-    "open-props": "^1.7.5",
-    "svelte": "^5.0.0-next.208",
+    "astro": "^4.15.1",
+    "open-props": "^1.7.6",
+    "svelte": "^5.0.0-next.242",
     "typescript": "^5.5.4",
-    "vue": "^3.4.35"
+    "vue": "^3.4.38"
   }
 }
