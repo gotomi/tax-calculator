@@ -22,8 +22,8 @@ export interface SalarySummary {
   [key: string]: number | string | boolean;
 }
 
-const GROSS_SALARY_MINIMAL = 4666;
-const GROSS_SALARY_LIMIT = 260190;
+const GROSS_SALARY_MINIMAL = 4806;
+const GROSS_SALARY_LIMIT = 282600;
 const DEDUCTIBLE_AUTHOR_LIMIT = 120000;
 const TAX_THRESHOLD = 120000;
 const TAX_RATE_LOW = 0.12;
@@ -51,7 +51,7 @@ function calculateSumToTax(
   ratioAuthor: number,
   deductibleAuthor: number,
   deductibleNormal: number,
-  ppkEmployerRatio: number = 0
+  ppkEmployerRatio: number = 0,
 ): number {
   const grossSalaryPerMonthAuthor = ratioAuthor * grossSalaryPerMonth;
   const grossSalaryPerMonthStandard = grossSalaryPerMonth * (1 - ratioAuthor);
@@ -94,7 +94,7 @@ function contributionValue(
   currentValue: number,
   previousGrossSalarySum: number,
   rate: number,
-  limit: number
+  limit: number,
 ): number {
   let sum = previousGrossSalarySum + currentValue;
   let tax;
@@ -112,7 +112,7 @@ function contributionValue(
 
 function calculateHealthContribution(
   grossSalary: number,
-  socialContribution: number
+  socialContribution: number,
 ): number {
   const rate = 0.09;
   return rate * (grossSalary - socialContribution);
@@ -142,7 +142,7 @@ function calculateDisabilityContribution(
   currentValue: number,
   previousGrossSalarySum: number,
   limit: number,
-  employer: boolean = false
+  employer: boolean = false,
 ): number {
   const rate = employer ? 0.065 : 0.015;
   return contributionValue(currentValue, previousGrossSalarySum, rate, limit);
@@ -151,7 +151,7 @@ function calculateDisabilityContribution(
 function calculatePensionContribution(
   currentValue: number,
   previousGrossSalarySum: number,
-  limit: number
+  limit: number,
 ): number {
   const rate = 0.0976;
   return contributionValue(currentValue, previousGrossSalarySum, rate, limit);
@@ -161,7 +161,7 @@ function calculateDeductiblesAuthor(
   grossSalaryPerMonth: number,
   socialContribution: number,
   authorTaxDeductibleCostRatio: number,
-  previousDeductiblesCostSum: number
+  previousDeductiblesCostSum: number,
 ): number {
   const currentValue =
     (grossSalaryPerMonth - socialContribution) *
@@ -172,7 +172,7 @@ function calculateDeductiblesAuthor(
     currentValue,
     previousDeductiblesCostSum,
     1,
-    DEDUCTIBLE_AUTHOR_LIMIT
+    DEDUCTIBLE_AUTHOR_LIMIT,
   );
 }
 
@@ -182,7 +182,7 @@ export function grossToNet(
   authorTaxDeductibleCostRatio: number,
   ppkEmployeeRatio: number = 0.02,
   ppkEmployerRatio: number = 0.015,
-  employer: boolean
+  employer: boolean,
 ): SalaryData[] {
   let previousGrossSalarySum = 0;
   let previousToTaxSum = 0;
@@ -192,13 +192,13 @@ export function grossToNet(
     const pension = calculatePensionContribution(
       grossSalaryPerMonth,
       previousGrossSalarySum,
-      GROSS_SALARY_LIMIT
+      GROSS_SALARY_LIMIT,
     );
     const disability = calculateDisabilityContribution(
       grossSalaryPerMonth,
       previousGrossSalarySum,
       GROSS_SALARY_LIMIT,
-      employer
+      employer,
     );
     const sickness = calculateSicknessContribution(grossSalaryPerMonth);
 
@@ -209,7 +209,7 @@ export function grossToNet(
       grossSalaryPerMonth,
       socialContribution,
       authorTaxDeductibleCostRatio,
-      previousDeductiblesCostSum
+      previousDeductiblesCostSum,
     );
     let deductibles = deductiblesWithAuthor + taxDeductibleCost;
     if (deductibles > grossSalaryPerMonth) {
@@ -224,7 +224,7 @@ export function grossToNet(
       authorTaxDeductibleCostRatio,
       deductiblesWithAuthor,
       taxDeductibleCost,
-      ppkEmployerRatio
+      ppkEmployerRatio,
     );
 
     const tax = calculateTax(sumToTax, previousToTaxSum);
@@ -232,7 +232,7 @@ export function grossToNet(
 
     const health = calculateHealthContribution(
       grossSalaryPerMonth,
-      socialContribution
+      socialContribution,
     );
 
     const ppkEmployee = ppkEmployeeRatio * grossSalaryPerMonth;
@@ -317,7 +317,7 @@ export function grossToNetWithTotal(
   authorTaxDeductibleCostRatio: number,
   ppkEmployeeRatio: number,
   ppkEmployerRatio: number,
-  employer: boolean = false
+  employer: boolean = false,
 ) {
   const year = grossToNet(
     grossSalaryPerMonthValues,
@@ -325,7 +325,7 @@ export function grossToNetWithTotal(
     authorTaxDeductibleCostRatio,
     ppkEmployeeRatio,
     ppkEmployerRatio,
-    employer
+    employer,
   );
 
   const total = annualSummary(year);
