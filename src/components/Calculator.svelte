@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { grossToNetWithTotal} from "../lib/score-tax.ts";
+    import { grossToNetWithTotal, YEAR_DATA } from "../lib/score-tax.ts";
     import { round } from "../lib/utils.ts";
 
     let authorTaxDeductibleCostPercent = $state(0);
     let grossSalaryPerMonth = $state(0);
     let PPK = $state(false);
     let AUTHOR = $state(false);
+    let selectedYear = $state(2026);
 
     let ppkEmployeePercent = $state(0);
     let ppkEmployerPercent = $state(0);
@@ -15,8 +16,6 @@
         ppkEmployerPercent = PPK ? 1.5 : 0;
         authorTaxDeductibleCostPercent = AUTHOR ? 70 : 0;
     });
-
-
 
     const employerKeys = [
         "month",
@@ -44,40 +43,37 @@
         "netSalary",
     ];
 
-
-
-   const translations =  {
-        "month": "miesiąc",
-        "grossSalaryPerMonth": "brutto",
-        "pension": "składka emerytalna",
-        "disability": "składka rentowa",
-        "accident": "składka wypadkowa",
-        "laborFund": "Fundusz Pracy",
-        "guaranteedEmployeeBenefitsFund": "Fundusz Gwarantowanych Świadczeń Pracowniczych",
-        "ppkEmployer": "PPK pracodawcy",
-        "employerCost": "koszt pracodawcy",
-        "deductibles": "koszty uzyskania przychodu",
-        "sickness": "składka chorobowa",
-        "health": "składka zdrowotna",
-        "sumToTax": "podstawa opodatkowania",
-        "tax": "podatek",
-        "ppkEmployee": "PPK pracownika",
-        "netSalary": "netto",
-        "January": "styczeń",
-        "February": "luty",
-        "March": "marzec",
-        "April": "kwiecień",
-        "May": "maj",
-        "June": "czerwiec",
-        "July": "lipiec",
-        "August": "sierpień",
-        "September": "wrzesień",
-        "October": "październik",
-        "November": "listopad",
-        "December": "grudzień"
-    }
-
-
+    const translations = {
+        month: "miesiąc",
+        grossSalaryPerMonth: "brutto",
+        pension: "składka emerytalna",
+        disability: "składka rentowa",
+        accident: "składka wypadkowa",
+        laborFund: "Fundusz Pracy",
+        guaranteedEmployeeBenefitsFund:
+            "Fundusz Gwarantowanych Świadczeń Pracowniczych",
+        ppkEmployer: "PPK pracodawcy",
+        employerCost: "koszt pracodawcy",
+        deductibles: "koszty uzyskania przychodu",
+        sickness: "składka chorobowa",
+        health: "składka zdrowotna",
+        sumToTax: "podstawa opodatkowania",
+        tax: "podatek",
+        ppkEmployee: "PPK pracownika",
+        netSalary: "netto",
+        January: "styczeń",
+        February: "luty",
+        March: "marzec",
+        April: "kwiecień",
+        May: "maj",
+        June: "czerwiec",
+        July: "lipiec",
+        August: "sierpień",
+        September: "wrzesień",
+        October: "październik",
+        November: "listopad",
+        December: "grudzień",
+    };
 
     let grossOverTheYear = $derived(
         Array(12).fill(Number(grossSalaryPerMonth)),
@@ -104,6 +100,7 @@
             ppkEmployeeRatio,
             ppkEmployerRatio,
             false,
+            selectedYear,
         );
 
         yearSalaryEmployer = grossToNetWithTotal(
@@ -113,6 +110,7 @@
             ppkEmployeeRatio,
             ppkEmployerRatio,
             true,
+            selectedYear,
         );
     }
 
@@ -136,53 +134,71 @@
     <form onsubmit={calculate}>
         <ul class="params">
             <li>
-            <label>
-                <strong>Miesięczne wynagrodzenie brutto: </strong>
-                <input type="number" bind:value={grossSalaryPerMonth} min="0"  step="0.01" />
-            </label>
+                <label>
+                    <strong>Rok: </strong>
+                    <select bind:value={selectedYear}>
+                        {#each Object.keys(YEAR_DATA)
+                            .map(Number)
+                            .sort((a, b) => b - a) as year}
+                            <option value={year}>{year}</option>
+                        {/each}
+                    </select>
+                </label>
             </li>
             <li>
-<label><input type="checkbox" bind:checked={AUTHOR} />    Autorskie koszty uzyskanie przychodu
+                <label>
+                    <strong>Miesięczne wynagrodzenie brutto: </strong>
+                    <input
+                        type="number"
+                        bind:value={grossSalaryPerMonth}
+                        min="0"
+                        step="0.01"
+                    />
+                </label>
+            </li>
+            <li>
+                <label
+                    ><input type="checkbox" bind:checked={AUTHOR} /> Autorskie
+                    koszty uzyskanie przychodu
                     {#if AUTHOR}
+                        <input
+                            type="number"
+                            bind:value={authorTaxDeductibleCostPercent}
+                            min="0"
+                            max="100"
+                        /> %
+                    {/if}
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="checkbox" bind:checked={PPK} /> PPK:
 
-             <input
-                    type="number"
-                    bind:value={authorTaxDeductibleCostPercent}
-                    min="0"
-                    max="100"
-                /> %
-
-
-            {/if}       </label>
-                    </li>
-              <li>
-            <label> <input type="checkbox" bind:checked={PPK} /> PPK:
-
-
-            {#if PPK}
-
-
-            <!-- <label> -->
-                PPK pracownik:
-                <input
-                    type="number"
-                    bind:value={ppkEmployeePercent}
-                    min="0"
-                    step="0.5"
-                /> %
-            <!-- </label>
+                    {#if PPK}
+                        <!-- <label> -->
+                        PPK pracownik:
+                        <input
+                            type="number"
+                            bind:value={ppkEmployeePercent}
+                            min="0"
+                            step="0.5"
+                        />
+                        %
+                        <!-- </label>
             <label> -->
-                PPK pracodawca:
-                <input
-                    type="number"
-                    bind:value={ppkEmployerPercent}
-                    min="0"
-                    step="0.5"
-                /> %
-            <!-- </label> -->
-  {/if}   </label>
-              <li>
-<!--            <button type="submit"> calculate</button>-->
+                        PPK pracodawca:
+                        <input
+                            type="number"
+                            bind:value={ppkEmployerPercent}
+                            min="0"
+                            step="0.5"
+                        />
+                        %
+                        <!-- </label> -->
+                    {/if}
+                </label>
+            </li>
+            <!--            <button type="submit"> calculate</button>-->
         </ul>
     </form>
     <h3>Pracownik</h3>
@@ -207,13 +223,14 @@
                                     oninput={calculate}
                                 />
                             </td>
-                            {:else if key === "month"}
-                                <td>{translations[monthSalary[key]]}</td>
-                            {:else if employeeKeys.includes(key)}
-
-                                <td>{key in monthSalary && round(monthSalary[key])}</td>
-                            {/if}
-
+                        {:else if key === "month"}
+                            <td>{translations[monthSalary[key]]}</td>
+                        {:else if employeeKeys.includes(key)}
+                            <td
+                                >{key in monthSalary &&
+                                    round(monthSalary[key])}</td
+                            >
+                        {/if}
                     {/each}
                 </tr>
             {/each}
@@ -258,10 +275,10 @@
         flex-direction: column;
         gap: 32px;
     }
-    li{
+    li {
         width: auto;
     }
-    .params{
+    .params {
         display: flex;
         /* flex-direction: column; */
         list-style: none;
@@ -270,7 +287,7 @@
         padding: 16px;
     }
 
-    label{
+    label {
         display: flex;
         gap: 16px;
         align-items: center;
@@ -289,7 +306,6 @@
         border: 1px solid var(--sand-5);
         padding: 0.75rem;
         text-align: center;
-
     }
 
     th {

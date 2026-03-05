@@ -22,8 +22,20 @@ export interface SalarySummary {
   [key: string]: number | string | boolean;
 }
 
-const GROSS_SALARY_MINIMAL = 4806;
-const GROSS_SALARY_LIMIT = 282600;
+export const YEAR_DATA: Record<number, { GROSS_SALARY_MINIMAL: number; GROSS_SALARY_LIMIT: number }> = {
+  2024: {
+    GROSS_SALARY_MINIMAL: 4300,
+    GROSS_SALARY_LIMIT: 234720,
+  },
+  2025: {
+    GROSS_SALARY_MINIMAL: 4666,
+    GROSS_SALARY_LIMIT: 260190,
+  },
+  2026: {
+    GROSS_SALARY_MINIMAL: 4806,
+    GROSS_SALARY_LIMIT: 282600,
+  },
+};
 const DEDUCTIBLE_AUTHOR_LIMIT = 120000;
 const TAX_THRESHOLD = 120000;
 const TAX_RATE_LOW = 0.12;
@@ -123,8 +135,8 @@ function calculateAccidentContribution(grossSalary: number): number {
   return rate * grossSalary;
 }
 
-function calculateLaborFund(grossSalary: number): number {
-  const rate = grossSalary > GROSS_SALARY_MINIMAL ? 0.0245 : 0;
+function calculateLaborFund(grossSalary: number, minimalSalary: number): number {
+  const rate = grossSalary >= minimalSalary ? 0.0245 : 0;
   return rate * grossSalary;
 }
 
@@ -183,10 +195,13 @@ export function grossToNet(
   ppkEmployeeRatio: number = 0.02,
   ppkEmployerRatio: number = 0.015,
   employer: boolean,
+  year: number = 2026,
 ): SalaryData[] {
   let previousGrossSalarySum = 0;
   let previousToTaxSum = 0;
   let previousDeductiblesCostSum = 0;
+
+  const { GROSS_SALARY_MINIMAL, GROSS_SALARY_LIMIT } = YEAR_DATA[year] || YEAR_DATA[2026];
 
   return grossSalaryPerMonthValues.map((grossSalaryPerMonth, index) => {
     const pension = calculatePensionContribution(
@@ -240,7 +255,7 @@ export function grossToNet(
     const netSalary =
       grossSalaryPerMonth - (socialContribution + health + tax) - ppkEmployee;
 
-    const laborFund = calculateLaborFund(grossSalaryPerMonth);
+    const laborFund = calculateLaborFund(grossSalaryPerMonth, GROSS_SALARY_MINIMAL);
     const guaranteedEmployeeBenefitsFund =
       calculateGuaranteedEmployeeBenefitsFund(grossSalaryPerMonth);
     const accident = calculateAccidentContribution(grossSalaryPerMonth);
@@ -318,6 +333,7 @@ export function grossToNetWithTotal(
   ppkEmployeeRatio: number,
   ppkEmployerRatio: number,
   employer: boolean = false,
+  yearOfCalculation: number = 2026,
 ) {
   const year = grossToNet(
     grossSalaryPerMonthValues,
@@ -326,6 +342,7 @@ export function grossToNetWithTotal(
     ppkEmployeeRatio,
     ppkEmployerRatio,
     employer,
+    yearOfCalculation,
   );
 
   const total = annualSummary(year);
