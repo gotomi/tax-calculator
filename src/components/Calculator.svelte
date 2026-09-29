@@ -159,7 +159,7 @@
             <li>
                 <label
                     ><input type="checkbox" bind:checked={AUTHOR} /> Autorskie
-                    koszty uzyskanie przychodu
+                    koszty uzyskania przychodu
                     {#if AUTHOR}
                         <input
                             type="number"
@@ -172,10 +172,12 @@
             </li>
             <li>
                 <label>
-                    <input type="checkbox" bind:checked={PPK} /> PPK:
-
-                    {#if PPK}
-                        <!-- <label> -->
+                    <input type="checkbox" bind:checked={PPK} /> PPK
+                </label>
+            </li>
+            {#if PPK}
+                <li>
+                    <label>
                         PPK pracownik:
                         <input
                             type="number"
@@ -184,8 +186,10 @@
                             step="0.5"
                         />
                         %
-                        <!-- </label>
-            <label> -->
+                    </label>
+                </li>
+                <li>
+                    <label>
                         PPK pracodawca:
                         <input
                             type="number"
@@ -194,14 +198,14 @@
                             step="0.5"
                         />
                         %
-                        <!-- </label> -->
-                    {/if}
-                </label>
-            </li>
+                    </label>
+                </li>
+            {/if}
             <!--            <button type="submit"> calculate</button>-->
         </ul>
     </form>
     <h3>Pracownik</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -236,8 +240,10 @@
             {/each}
         </tbody>
     </table>
+    </div>
 
     <h3>Pracodawca</h3>
+    <div class="table-wrap">
     <table>
         <thead>
             <tr>
@@ -267,6 +273,7 @@
             {/each}
         </tbody>
     </table>
+    </div>
 </div>
 
 <style>
@@ -280,11 +287,12 @@
     }
     .params {
         display: flex;
-        /* flex-direction: column; */
+        flex-wrap: wrap;
         list-style: none;
         gap: 16px;
         background-color: var(--sand-1);
         padding: 16px;
+        border-radius: 8px;
     }
 
     label {
@@ -292,6 +300,12 @@
         gap: 16px;
         align-items: center;
         border: 1px solid var(--sand-3);
+        border-radius: 8px;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         border-radius: 8px;
     }
 
@@ -304,13 +318,19 @@
     td,
     th {
         border: 1px solid var(--sand-5);
-        padding: 0.75rem;
+        padding: 0.75rem 0.5rem;
         text-align: center;
+        font-size: 0.875rem;
     }
 
     th {
         background-color: var(--sand-4);
         color: var(--sand-0);
+        font-size: 0.8125rem;
+    }
+
+    td input[type="number"] {
+        width: 4.5rem;
     }
 
     tr:nth-child(even) td {
@@ -331,18 +351,40 @@
         color: var(--sand-0);
     }
 
-    input[type="number"] {
-        max-width: var(--size-fluid-6);
+    input[type="number"],
+    select {
         background-color: var(--sand-0);
         border: 1px solid var(--sand-2);
+        border-radius: 8px;
+    }
+
+    input[type="number"] {
+        max-width: var(--size-fluid-6);
     }
 
     input:invalid {
         border: 2px solid var(--red-5);
     }
 
-    /*button {*/
-    /*    background-color: var(--red-3);*/
-    /*    color: var(--sand-0);*/
-    /*}*/
+    @media (max-width: 720px) {
+        .container {
+            gap: 16px;
+        }
+        .params {
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px;
+        }
+        label {
+            flex-wrap: wrap;
+            gap: 4px 8px;
+        }
+        td,
+        th {
+            padding: 0.5rem 0.375rem;
+        }
+        td {
+            white-space: nowrap;
+        }
+    }
 </style>
